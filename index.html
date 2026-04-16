@@ -1,0 +1,577 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:var(--font-sans,sans-serif);background:#2e2e2e;color:#e8e8e8;font-size:14px;}
+.dash{background:#2e2e2e;min-height:100vh;}
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:11px 18px;background:#202020;border-bottom:2px solid #ccff00;}
+.top-center{display:flex;flex-direction:column;align-items:center;}
+.page-title{font-size:14px;font-weight:500;color:#ccff00;letter-spacing:0.1em;text-transform:uppercase;}
+.page-sub{font-size:10px;color:#666;letter-spacing:0.05em;margin-top:1px;}
+.top-right{display:flex;align-items:center;gap:8px;}
+.live-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:#ccff00;animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.2;}}
+.clock{font-size:12px;color:#666;}
+.content{padding:12px 16px;}
+.section-block{margin-bottom:16px;}
+.section-header{display:flex;align-items:center;gap:8px;margin-bottom:8px;padding-bottom:6px;border-bottom:0.5px solid #333;}
+.section-num{width:20px;height:20px;border-radius:4px;background:#ccff00;color:#1a1a00;font-size:10px;font-weight:500;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.section-title{font-size:11px;font-weight:500;color:#888;text-transform:uppercase;letter-spacing:0.07em;}
+.kpi-row{display:grid;gap:7px;}
+.g4{grid-template-columns:repeat(4,minmax(0,1fr));}
+.g5{grid-template-columns:repeat(5,minmax(0,1fr));}
+.kpi{background:#1e1e1e;border:0.5px solid #333;border-radius:8px;padding:11px 13px;cursor:pointer;transition:border-color 0.15s,background 0.15s;position:relative;}
+.kpi:hover{border-color:#ccff00;background:#222200;}
+.kpi.active{border-color:#ccff00;background:#222200;}
+.kpi-label{font-size:10px;color:#555;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:4px;line-height:1.3;}
+.kpi-value{font-size:26px;font-weight:500;line-height:1;}
+.kpi-sub{font-size:10px;color:#4a4a4a;margin-top:3px;}
+.kpi-hint{font-size:9px;color:#ccff00;margin-top:4px;opacity:0;}
+.kpi:hover .kpi-hint,.kpi.active .kpi-hint{opacity:1;}
+.v-red .kpi-value{color:#ff6b6b;}
+.v-orange .kpi-value{color:#ff9f43;}
+.v-yellow .kpi-value{color:#ccff00;}
+.v-white .kpi-value{color:#e8e8e8;}
+.v-green .kpi-value{color:#4ade80;}
+.v-blue .kpi-value{color:#60a5fa;}
+.drill-zone{background:#191919;border:0.5px solid #333;border-left:3px solid #ccff00;border-radius:0 8px 8px 0;padding:14px 16px;margin-top:8px;}
+.drill-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+.drill-title{font-size:11px;font-weight:500;color:#ccff00;text-transform:uppercase;letter-spacing:0.06em;}
+.badge{font-size:10px;font-weight:500;padding:2px 8px;border-radius:20px;white-space:nowrap;}
+.br{background:#3a1010;color:#ff6b6b;}
+.bo{background:#2a1800;color:#ff9f43;}
+.by{background:#252d00;color:#ccff00;}
+.bg{background:#0a2510;color:#4ade80;}
+.bb{background:#0a1a30;color:#60a5fa;}
+.bx{background:#222;color:#666;}
+.os-table{width:100%;border-collapse:collapse;font-size:12px;table-layout:fixed;}
+.os-table th{text-align:left;color:#444;font-weight:500;padding:0 6px 6px 0;border-bottom:0.5px solid #2e2e2e;font-size:10px;text-transform:uppercase;letter-spacing:0.04em;}
+.os-table td{padding:6px 6px 6px 0;border-bottom:0.5px solid #222;color:#bbb;vertical-align:middle;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.os-table tr:last-child td{border-bottom:none;}
+.os-table tr.hl td{background:#1f1c00;}
+.os-table tr:hover td{background:#212121;}
+.tab-bar{display:flex;gap:4px;margin-bottom:10px;}
+.tab{padding:4px 11px;font-size:11px;border-radius:6px;cursor:pointer;border:0.5px solid #333;background:#222;color:#555;font-weight:500;}
+.tab.active{background:#ccff00;color:#1a1a00;border-color:#ccff00;font-weight:600;}
+.divlbl{font-size:10px;color:#555;text-transform:uppercase;letter-spacing:0.05em;margin:8px 0 5px;font-weight:500;}
+.tech-chip{display:flex;align-items:center;gap:6px;padding:5px 8px;border-radius:6px;background:#222;margin-bottom:3px;font-size:12px;color:#bbb;}
+.dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+.dot-r{background:#ff6b6b;}.dot-o{background:#ff9f43;}.dot-g{background:#4ade80;}.dot-x{background:#444;}.dot-y{background:#ccff00;}
+.gauge-track{flex:1;height:8px;background:#252525;border-radius:4px;overflow:hidden;}
+.gauge-fill{height:100%;border-radius:4px;}
+.aging-row{display:flex;align-items:center;gap:8px;font-size:11px;margin-bottom:7px;}
+.aging-lbl{width:74px;color:#666;flex-shrink:0;}
+.aging-track{flex:1;height:10px;background:#252525;border-radius:3px;overflow:hidden;}
+.aging-fill{height:100%;border-radius:3px;}
+.aging-n{width:22px;text-align:right;font-weight:500;color:#ccc;}
+.tooltip-wrap{position:relative;display:inline-block;}
+.tooltip-wrap:hover .tooltip-box{display:block;}
+.tooltip-box{display:none;position:absolute;bottom:100%;left:50%;transform:translateX(-50%);background:#111;border:0.5px solid #ccff00;border-radius:6px;padding:8px 10px;font-size:11px;color:#ccc;white-space:nowrap;z-index:10;margin-bottom:4px;min-width:200px;}
+.tooltip-box::after{content:'';position:absolute;top:100%;left:50%;transform:translateX(-50%);border:5px solid transparent;border-top-color:#ccff00;}
+.donut-wrap{display:flex;align-items:center;gap:20px;}
+.donut-legend{display:flex;flex-direction:column;gap:6px;}
+.legend-item{display:flex;align-items:center;gap:6px;font-size:11px;color:#aaa;}
+.legend-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.mini-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+</style>
+
+<div class="dash">
+  <div class="topbar">
+    <svg width="76" height="28" viewBox="0 0 76 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <text x="0" y="22" font-family="Arial,sans-serif" font-weight="300" font-size="24" fill="#ffffff">V</text>
+      <circle cx="26" cy="7" r="3.2" fill="#ccff00"/>
+      <text x="30" y="22" font-family="Arial,sans-serif" font-weight="300" font-size="24" fill="#ffffff">tal</text>
+    </svg>
+    <div class="top-center">
+      <div class="page-title">Tela única — despacho</div>
+      <div class="page-sub">Operação de campo FTTH · Tempo real</div>
+    </div>
+    <div class="top-right">
+      <span class="live-dot"></span>
+      <span class="clock" id="clock">—</span>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- ═══ SEÇÃO 1 ═══ -->
+    <div class="section-block">
+      <div class="section-header">
+        <div class="section-num">1</div>
+        <span class="section-title">Capacidade e visibilidade de campo</span>
+      </div>
+      <div class="kpi-row g4">
+        <div class="kpi v-white" id="s1-kpi-logados" onclick="s1drill('logados',this)">
+          <div class="kpi-label">Técnicos logados</div>
+          <div class="kpi-value">18<span style="font-size:14px;color:#555;font-weight:400;"> / 22</span></div>
+          <div class="kpi-sub">4 não logados</div>
+          <div class="kpi-hint">▾ ver status</div>
+        </div>
+        <div class="kpi v-red" id="s1-kpi-idle" onclick="s1drill('idle',this)">
+          <div class="kpi-label">Idle time — sem OS alocada</div>
+          <div class="kpi-value">4</div>
+          <div class="kpi-sub">técnicos parados agora</div>
+          <div class="kpi-hint">▾ ver lista</div>
+        </div>
+        <div class="kpi v-orange" id="s1-kpi-semfech" onclick="s1drill('semfech',this)">
+          <div class="kpi-label">Técnicos s/ OS finalizada</div>
+          <div class="kpi-value">3</div>
+          <div class="kpi-sub">nenhuma baixa no dia</div>
+          <div class="kpi-hint">▾ ver lista</div>
+        </div>
+        <div class="kpi v-yellow" id="s1-kpi-util" onclick="s1drill('util',this)">
+          <div class="kpi-label">Utilização do técnico</div>
+          <div class="kpi-value">71<span style="font-size:14px;font-weight:400;">%</span></div>
+          <div class="kpi-sub">meta: &gt; 80%</div>
+          <div class="kpi-hint">▾ ver rosca</div>
+        </div>
+      </div>
+      <div class="drill-zone" id="s1-drill">
+        <div class="drill-header">
+          <span class="drill-title" id="s1-drill-title">Técnicos logados — distribuição por status</span>
+          <span style="font-size:10px;color:#555;">Clique em outro KPI para trocar</span>
+        </div>
+        <div id="s1-drill-content"></div>
+      </div>
+    </div>
+
+    <!-- ═══ SEÇÃO 2 ═══ -->
+    <div class="section-block">
+      <div class="section-header">
+        <div class="section-num">2</div>
+        <span class="section-title">Eficiência operacional e tempos (produtividade)</span>
+      </div>
+      <div class="kpi-row g4">
+        <div class="kpi v-yellow" id="s2-kpi-mtta" onclick="s2drill('mtta',this)">
+          <div class="kpi-label">MTTA — TM deslocamento</div>
+          <div class="kpi-value">24<span style="font-size:14px;font-weight:400;">min</span></div>
+          <div class="kpi-sub">meta: &lt; 30min</div>
+          <div class="kpi-hint">▾ ver por técnico</div>
+        </div>
+        <div class="kpi v-yellow" id="s2-kpi-mtti" onclick="s2drill('mtti',this)">
+          <div class="kpi-label">MTTI / AHT — TM execução</div>
+          <div class="kpi-value">1h38</div>
+          <div class="kpi-sub">meta: &lt; 2h</div>
+          <div class="kpi-hint">▾ ver por técnico</div>
+        </div>
+        <div class="kpi v-orange" id="s2-kpi-ba2h" onclick="s2drill('ba2h',this)">
+          <div class="kpi-label">BAs com execução &gt; 2h</div>
+          <div class="kpi-value">3</div>
+          <div class="kpi-sub">em campo agora</div>
+          <div class="kpi-hint">▾ ver lista</div>
+        </div>
+        <div class="kpi v-green" id="s2-kpi-jpt" onclick="s2drill('jpt',this)">
+          <div class="kpi-label">Jobs por técnico (JPT)</div>
+          <div class="kpi-value">2,4</div>
+          <div class="kpi-sub">média do dia · meta: 3</div>
+          <div class="kpi-hint">▾ ver ranking</div>
+        </div>
+      </div>
+      <div class="drill-zone" id="s2-drill" style="display:none;">
+        <div class="drill-header">
+          <span class="drill-title" id="s2-drill-title"></span>
+          <span class="badge bx" style="cursor:pointer;" onclick="closeS2()">✕ fechar</span>
+        </div>
+        <div id="s2-drill-content"></div>
+      </div>
+    </div>
+
+    <!-- ═══ SEÇÃO 3 ═══ -->
+    <div class="section-block">
+      <div class="section-header">
+        <div class="section-num">3</div>
+        <span class="section-title">Qualidade, reincidência e tratamento de pendências</span>
+      </div>
+      <div class="kpi-row g5">
+        <div class="kpi v-orange" id="s3-kpi-fechpend" onclick="s3drill('fechpend',this)">
+          <div class="kpi-label">Fechadas c/ pendência</div>
+          <div class="kpi-value">6</div>
+          <div class="kpi-sub">no dia corrente</div>
+          <div class="kpi-hint">▾ ver lista</div>
+        </div>
+        <div class="kpi v-orange" id="s3-kpi-reincid" onclick="s3drill('reincid',this)">
+          <div class="kpi-label">OS c/ pendência anterior</div>
+          <div class="kpi-value">6</div>
+          <div class="kpi-sub">hover na OS = histórico</div>
+          <div class="kpi-hint">▾ ver lista</div>
+        </div>
+        <div class="kpi v-green" id="s3-kpi-fvs" onclick="s3drill('fvs',this)">
+          <div class="kpi-label">FVS — 1ª visita sucesso</div>
+          <div class="kpi-value">78<span style="font-size:14px;font-weight:400;">%</span></div>
+          <div class="kpi-sub">meta: &gt; 85%</div>
+          <div class="kpi-hint">▾ ver rosca</div>
+        </div>
+        <div class="kpi v-red" id="s3-kpi-repeatcall" onclick="s3drill('repeatcall',this)">
+          <div class="kpi-label">Repeat calls / Max 3</div>
+          <div class="kpi-value">4</div>
+          <div class="kpi-sub">2 atingiram Max 3</div>
+          <div class="kpi-hint">▾ ver clientes</div>
+        </div>
+        <div class="kpi v-orange" id="s3-kpi-remarc" onclick="s3drill('remarc',this)">
+          <div class="kpi-label">Remarcações contingência</div>
+          <div class="kpi-value">3</div>
+          <div class="kpi-sub">quebra veíc. / sem material</div>
+          <div class="kpi-hint">▾ ver lista</div>
+        </div>
+      </div>
+      <div class="drill-zone" id="s3-drill">
+        <div class="drill-header">
+          <span class="drill-title" id="s3-drill-title">Top 5 — tipos de fechamento do dia</span>
+          <span style="font-size:10px;color:#555;">Clique em outro KPI para trocar</span>
+        </div>
+        <div id="s3-drill-content"></div>
+      </div>
+    </div>
+
+    <!-- ═══ SEÇÃO 4 ═══ -->
+    <div class="section-block">
+      <div class="section-header">
+        <div class="section-num">4</div>
+        <span class="section-title">SLA, priorização e casos críticos</span>
+      </div>
+      <div class="kpi-row g4">
+        <div class="kpi v-yellow" id="s4-kpi-aging" onclick="s4drill('aging',this)">
+          <div class="kpi-label">Aging das OS abertas</div>
+          <div class="kpi-value">47</div>
+          <div class="kpi-sub">12 com aging crítico</div>
+          <div class="kpi-hint">▾ ver distribuição</div>
+        </div>
+        <div class="kpi v-orange" id="s4-kpi-sla" onclick="s4drill('sla',this)">
+          <div class="kpi-label">SLA compliance (janela)</div>
+          <div class="kpi-value">82<span style="font-size:14px;font-weight:400;">%</span></div>
+          <div class="kpi-sub">meta: &gt; 90%</div>
+          <div class="kpi-hint">▾ ver rosca</div>
+        </div>
+        <div class="kpi v-red" id="s4-kpi-prior" onclick="s4drill('prior',this)">
+          <div class="kpi-label">Casos prioritários</div>
+          <div class="kpi-value">8</div>
+          <div class="kpi-sub">3 sem técnico alocado</div>
+          <div class="kpi-hint">▾ ver lista</div>
+        </div>
+        <div class="kpi v-red" id="s4-kpi-ouv" onclick="s4drill('ouv',this)">
+          <div class="kpi-label">Ouvidoria e Anatel</div>
+          <div class="kpi-value">5</div>
+          <div class="kpi-sub">2 Anatel · 3 ouvidoria</div>
+          <div class="kpi-hint">▾ ver lista</div>
+        </div>
+      </div>
+      <div class="drill-zone" id="s4-drill">
+        <div class="drill-header">
+          <span class="drill-title" id="s4-drill-title">Aging das OS — distribuição por faixa de tempo</span>
+          <span style="font-size:10px;color:#555;">Clique em outro KPI para trocar</span>
+        </div>
+        <div id="s4-drill-content"></div>
+      </div>
+    </div>
+
+    <div style="font-size:10px;color:#2a2a2a;text-align:right;margin-top:2px;">Dados simulados · Atualização a cada 5 min · V.tal Despacho v1.2</div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+function tick(){
+  const d=new Date();
+  document.getElementById('clock').textContent=
+    d.toLocaleDateString('pt-BR')+' · '+d.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+}
+tick();setInterval(tick,1000);
+
+const charts={};
+function destroyChart(id){if(charts[id]){charts[id].destroy();delete charts[id];}}
+
+function makeDonut(canvasId,data,labels,colors,centerLabel){
+  destroyChart(canvasId);
+  const ctx=document.getElementById(canvasId).getContext('2d');
+  charts[canvasId]=new Chart(ctx,{
+    type:'doughnut',
+    data:{labels,datasets:[{data,backgroundColor:colors,borderWidth:0,hoverOffset:4}]},
+    options:{
+      responsive:false,cutout:'72%',
+      plugins:{
+        legend:{display:false},
+        tooltip:{callbacks:{label:c=>' '+c.label+': '+c.raw+'%'}}
+      }
+    },
+    plugins:[{id:'center',beforeDraw(chart){
+      const{ctx,chartArea:{top,left,width,height}}=chart;
+      ctx.save();
+      ctx.font='500 18px Arial';ctx.fillStyle='#e8e8e8';
+      ctx.textAlign='center';ctx.textBaseline='middle';
+      ctx.fillText(centerLabel,left+width/2,top+height/2);
+      ctx.restore();
+    }}]
+  });
+}
+
+function makeHBar(canvasId,labels,values,colors,xMax){
+  destroyChart(canvasId);
+  const ctx=document.getElementById(canvasId).getContext('2d');
+  charts[canvasId]=new Chart(ctx,{
+    type:'bar',
+    data:{
+      labels,
+      datasets:[{data:values,backgroundColor:colors,borderWidth:0,borderRadius:3}]
+    },
+    options:{
+      indexAxis:'y',
+      responsive:true,
+      maintainAspectRatio:false,
+      plugins:{
+        legend:{display:false},
+        tooltip:{callbacks:{label:c=>' '+c.raw+(xMax===10?' técnicos':' OS')}}
+      },
+      scales:{
+        x:{
+          min:0,
+          max:xMax||undefined,
+          ticks:{stepSize:1,color:'#666',font:{size:11}},
+          grid:{color:'#2a2a2a'},
+          border:{color:'#333'}
+        },
+        y:{
+          ticks:{color:'#aaa',font:{size:12}},
+          grid:{display:false},
+          border:{color:'#333'}
+        }
+      }
+    }
+  });
+}
+
+/* ─── SEÇÃO 1 ─── */
+const s1Titles={
+  logados:'Técnicos logados — distribuição por status',
+  idle:'Idle time — técnicos sem OS alocada (4)',
+  semfech:'Técnicos sem OS finalizada no dia (3)',
+  util:'Utilização do técnico — rosca'
+};
+
+function s1Content(key){
+  if(key==='logados') return `<div style="position:relative;width:100%;height:220px;"><canvas id="cv-s1-logados" role="img" aria-label="Barras horizontais: Em campo 7, Em deslocamento 4, Pausa 3, Sem OS 4, Não logados 4">Status dos técnicos.</canvas></div>`;
+  if(key==='idle') return `<table class="os-table"><thead><tr><th style="width:22%">Técnico</th><th style="width:18%">Região</th><th style="width:18%">Ocioso desde</th><th style="width:18%">Tempo ocioso</th><th style="width:12%">Última OS</th><th style="width:12%">OS hoje</th></tr></thead><tbody>
+    <tr><td>Marcos Oliveira</td><td>Zona Norte</td><td>09:15</td><td><span class="badge br">3h 29min</span></td><td>OS-00344</td><td>2</td></tr>
+    <tr><td>Renato Lima</td><td>Zona Leste</td><td>09:48</td><td><span class="badge br">2h 56min</span></td><td>OS-00358</td><td>1</td></tr>
+    <tr><td>Felipe Cardoso</td><td>Centro</td><td>10:22</td><td><span class="badge bo">2h 22min</span></td><td>OS-00367</td><td>2</td></tr>
+    <tr><td>André Rocha</td><td>Zona Sul</td><td>10:55</td><td><span class="badge bo">1h 49min</span></td><td>OS-00371</td><td>1</td></tr>
+    </tbody></table>`;
+  if(key==='semfech') return `<table class="os-table"><thead><tr><th style="width:22%">Técnico</th><th style="width:18%">Status atual</th><th style="width:20%">OS aberta</th><th style="width:20%">Tempo na OS</th><th style="width:20%">Observação</th></tr></thead><tbody>
+    <tr><td>Roberto Teixeira</td><td><span class="badge bo">Em campo</span></td><td>OS-00415</td><td>1h 52min</td><td>1ª OS do dia</td></tr>
+    <tr><td>Gustavo Nunes</td><td><span class="badge bo">Em campo</span></td><td>OS-00429</td><td>1h 18min</td><td>1ª OS do dia</td></tr>
+    <tr><td>Diego Pires</td><td><span class="badge bx">Deslocamento</span></td><td>OS-00437</td><td>0h 34min</td><td>Atraso de início</td></tr>
+    </tbody></table>`;
+  if(key==='util') return `<div class="donut-wrap">
+    <canvas id="cv-s1-util" width="160" height="160" role="img" aria-label="Rosca utilização 71%">Utilização: 71% utilizado, 29% ocioso.</canvas>
+    <div class="donut-legend">
+      <div class="legend-item"><span class="legend-dot" style="background:#ccff00;"></span>Em execução / deslocamento: 71%</div>
+      <div class="legend-item"><span class="legend-dot" style="background:#2a2a2a;"></span>Ocioso: 29%</div>
+      <div style="margin-top:8px;font-size:10px;color:#555;">Meta: &gt; 80%</div>
+      <div style="margin-top:10px;">
+        <table class="os-table" style="font-size:11px;"><thead><tr><th>Técnico</th><th>Util%</th><th>Status</th></tr></thead><tbody>
+        <tr><td>Carlos Mendes</td><td>94%</td><td><span class="badge bg">OK</span></td></tr>
+        <tr><td>Paulo Santos</td><td>88%</td><td><span class="badge bg">OK</span></td></tr>
+        <tr><td>Ricardo Ferreira</td><td>82%</td><td><span class="badge by">OK</span></td></tr>
+        <tr><td>Marcos Oliveira</td><td>41%</td><td><span class="badge br">Crítico</span></td></tr>
+        <tr><td>Renato Lima</td><td>38%</td><td><span class="badge br">Crítico</span></td></tr>
+        </tbody></table>
+      </div>
+    </div></div>`;
+}
+
+function s1drill(key,el){
+  document.querySelectorAll('[id^="s1-kpi-"]').forEach(k=>k.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('s1-drill-title').textContent=s1Titles[key];
+  document.getElementById('s1-drill-content').innerHTML=s1Content(key);
+  if(key==='logados') setTimeout(()=>makeHBar('cv-s1-logados',
+    ['Em campo','Em deslocamento','Pausa / intervalo','Sem OS alocada (idle)','Não logados'],
+    [7,4,3,4,4],
+    ['#4ade80','#60a5fa','#ff9f43','#ff6b6b','#444'],
+    10
+  ),80);
+  if(key==='util') setTimeout(()=>makeDonut('cv-s1-util',[71,29],['Utilizado','Ocioso'],['#ccff00','#2a2a2a'],'71%'),80);
+}
+
+/* ─── SEÇÃO 2 ─── */
+const s2Titles={
+  mtta:'MTTA — tempo médio de deslocamento por técnico',
+  mtti:'MTTI / AHT — tempo médio de execução por técnico',
+  ba2h:'BAs com execução > 2h em campo agora (3)',
+  jpt:'Jobs por técnico — ranking do dia (meta: 3 OS/técnico)'
+};
+const s2Contents={
+  mtta:`<table class="os-table"><thead><tr><th style="width:22%">Técnico</th><th style="width:14%">OS no dia</th><th style="width:18%">TM desloc.</th><th style="width:26%">Maior trecho</th><th style="width:10%">Região</th><th style="width:10%">Status</th></tr></thead><tbody>
+  <tr><td>Carlos Mendes</td><td>3</td><td>18min</td><td>24min (OS-00411)</td><td>Centro</td><td><span class="badge bg">OK</span></td></tr>
+  <tr><td>Paulo Santos</td><td>2</td><td>22min</td><td>28min (OS-00418)</td><td>Zona Sul</td><td><span class="badge bg">OK</span></td></tr>
+  <tr><td>Ricardo Ferreira</td><td>2</td><td>27min</td><td>31min (OS-00431)</td><td>Zona Norte</td><td><span class="badge by">Atenção</span></td></tr>
+  <tr><td>João Ribeiro</td><td>1</td><td>35min</td><td>35min (OS-00402)</td><td>Zona Leste</td><td><span class="badge br">Acima</span></td></tr>
+  </tbody></table>`,
+  mtti:`<table class="os-table"><thead><tr><th style="width:22%">Técnico</th><th style="width:14%">OS fechadas</th><th style="width:18%">TM execução</th><th style="width:16%">Melhor</th><th style="width:16%">Pior</th><th style="width:14%">Status</th></tr></thead><tbody>
+  <tr><td>Carlos Mendes</td><td>3</td><td>1h 12min</td><td>0h 58min</td><td>1h 35min</td><td><span class="badge bg">Dentro</span></td></tr>
+  <tr><td>Paulo Santos</td><td>2</td><td>1h 28min</td><td>1h 15min</td><td>1h 41min</td><td><span class="badge bg">Dentro</span></td></tr>
+  <tr><td>Ricardo Ferreira</td><td>2</td><td>1h 44min</td><td>1h 30min</td><td>1h 58min</td><td><span class="badge by">Atenção</span></td></tr>
+  <tr><td>João Ribeiro</td><td>1</td><td>2h 05min</td><td>2h 05min</td><td>2h 05min</td><td><span class="badge br">Acima</span></td></tr>
+  </tbody></table>`,
+  ba2h:`<table class="os-table"><thead><tr><th style="width:16%">OS / BA</th><th style="width:22%">Cliente</th><th style="width:18%">Técnico</th><th style="width:22%">Endereço</th><th style="width:10%">Check-in</th><th style="width:12%">Tempo campo</th></tr></thead><tbody>
+  <tr class="hl"><td>OS-00412</td><td>Condomínio Parque</td><td>João Ribeiro</td><td>R. das Flores, 142</td><td>10:00</td><td><span class="badge br">2h 44min</span></td></tr>
+  <tr><td>OS-00389</td><td>Empresa Beta Ltda</td><td>Carlos Mendes</td><td>Av. Central, 800</td><td>10:33</td><td><span class="badge bo">2h 11min</span></td></tr>
+  <tr><td>OS-00401</td><td>Pedro Alves</td><td>Paulo Santos</td><td>R. Ipê, 55</td><td>10:41</td><td><span class="badge bo">2h 03min</span></td></tr>
+  </tbody></table>`,
+  jpt:`<table class="os-table"><thead><tr><th style="width:22%">Técnico</th><th style="width:14%">OS fechadas</th><th style="width:14%">Em aberto</th><th style="width:36%">Progresso vs meta</th><th style="width:14%">Status</th></tr></thead><tbody>
+  <tr><td>Carlos Mendes</td><td>3</td><td>1</td><td><div class="gauge-track"><div class="gauge-fill" style="width:100%;background:#4ade80;"></div></div></td><td><span class="badge bg">Meta OK</span></td></tr>
+  <tr><td>Paulo Santos</td><td>2</td><td>1</td><td><div class="gauge-track"><div class="gauge-fill" style="width:66%;background:#ccff00;"></div></div></td><td><span class="badge by">2/3</span></td></tr>
+  <tr><td>Ricardo Ferreira</td><td>2</td><td>1</td><td><div class="gauge-track"><div class="gauge-fill" style="width:66%;background:#ccff00;"></div></div></td><td><span class="badge by">2/3</span></td></tr>
+  <tr><td>João Ribeiro</td><td>1</td><td>1</td><td><div class="gauge-track"><div class="gauge-fill" style="width:33%;background:#ff9f43;"></div></div></td><td><span class="badge bo">1/3</span></td></tr>
+  <tr><td>Roberto Teixeira</td><td>0</td><td>1</td><td><div class="gauge-track"><div class="gauge-fill" style="width:0%;background:#ff6b6b;"></div></div></td><td><span class="badge br">0/3</span></td></tr>
+  </tbody></table>`
+};
+
+function s2drill(key,el){
+  document.querySelectorAll('[id^="s2-kpi-"]').forEach(k=>k.classList.remove('active'));
+  el.classList.add('active');
+  const zone=document.getElementById('s2-drill');
+  zone.style.display='block';
+  document.getElementById('s2-drill-title').textContent=s2Titles[key];
+  document.getElementById('s2-drill-content').innerHTML=s2Contents[key];
+  setTimeout(()=>zone.scrollIntoView({behavior:'smooth',block:'nearest'}),50);
+}
+function closeS2(){
+  document.getElementById('s2-drill').style.display='none';
+  document.querySelectorAll('[id^="s2-kpi-"]').forEach(k=>k.classList.remove('active'));
+}
+
+/* ─── SEÇÃO 3 ─── */
+const s3Titles={
+  top5:'Top 5 — tipos de fechamento do dia',
+  fechpend:'OS fechadas com pendência (6)',
+  reincid:'OS com pendência anterior — hover para histórico',
+  fvs:'FVS — taxa de sucesso na 1ª visita',
+  repeatcall:'Repeat calls — retornos em 30 dias e Max 3',
+  remarc:'Remarcações por contingência técnica (3)'
+};
+
+function s3Content(key){
+  if(key==='top5') return `<div style="position:relative;width:100%;height:200px;"><canvas id="cv-s3-top5" role="img" aria-label="Top 5 tipos de fechamento: Instalado 14, Sem acesso 5, Pendência técnica 4, Remarcado 4, Reagendado 3">Top 5 fechamentos do dia.</canvas></div>`;
+  if(key==='fvs') return `<div class="donut-wrap">
+    <canvas id="cv-s3-fvs" width="160" height="160" role="img" aria-label="Rosca FVS 78%">FVS: 78% sucesso, 22% retorno.</canvas>
+    <div class="donut-legend">
+      <div class="legend-item"><span class="legend-dot" style="background:#4ade80;"></span>Sucesso na 1ª visita: 78% (25 OS)</div>
+      <div class="legend-item"><span class="legend-dot" style="background:#ff6b6b;"></span>Retornou / pendência: 22% (7 OS)</div>
+      <div style="margin-top:8px;font-size:10px;color:#555;">Meta: &gt; 85% · Total: 32 OS</div>
+    </div></div>`;
+  if(key==='fechpend') return `<table class="os-table"><thead><tr><th style="width:14%">OS baixada</th><th style="width:20%">Cliente</th><th style="width:16%">Técnico</th><th style="width:10%">Baixada às</th><th style="width:22%">Pendência</th><th style="width:18%">Nova OS</th></tr></thead><tbody>
+  <tr><td>OS-00271</td><td>Lúcia Aparecida T.</td><td>João Ribeiro</td><td>08:45</td><td>Cabo externo inacessível</td><td><span class="badge bo">OS-00383</span></td></tr>
+  <tr><td>OS-00284</td><td>Padaria Estrela</td><td>Carlos Mendes</td><td>09:10</td><td>CTO inacessível</td><td><span class="badge bo">OS-00391</span></td></tr>
+  <tr><td>OS-00301</td><td>Escritório Centro</td><td>Paulo Santos</td><td>09:55</td><td>Drop danificado</td><td><span class="badge bx">OS-00405</span></td></tr>
+  <tr><td>OS-00315</td><td>Pedro H. N.</td><td>Marcos Alves</td><td>10:30</td><td>Roteador trocado</td><td><span class="badge bx">OS-00414</span></td></tr>
+  <tr><td>OS-00328</td><td>Instituto Técnico</td><td>Diego Pires</td><td>11:05</td><td>Config VLAN pendente</td><td><span class="badge bx">OS-00423</span></td></tr>
+  <tr><td>OS-00341</td><td>Vera Lúcia S.</td><td>Renato Lima</td><td>11:48</td><td>Atenuação acima do limite</td><td><span class="badge bx">OS-00430</span></td></tr>
+  </tbody></table>`;
+  if(key==='reincid') return `<table class="os-table"><thead><tr><th style="width:14%">OS atual</th><th style="width:18%">Cliente</th><th style="width:16%">Técnico</th><th style="width:12%">OS anterior</th><th style="width:18%">Pendência</th><th style="width:12%">Aging</th><th style="width:10%">Vezes</th></tr></thead><tbody>
+  <tr><td><div class="tooltip-wrap">OS-00383<div class="tooltip-box">Histórico: OS-00271 (local fechado) · OS-00198 (cliente ausente) · 3ª tentativa</div></div></td><td>Lúcia Aparecida T.</td><td>João Ribeiro</td><td>OS-00271</td><td>Cabo externo</td><td><span class="badge bo">3h 40min</span></td><td><span class="badge br">3x</span></td></tr>
+  <tr><td><div class="tooltip-wrap">OS-00391<div class="tooltip-box">Histórico: OS-00284 (CTO inacessível) · 2ª tentativa</div></div></td><td>Padaria Estrela</td><td>Carlos Mendes</td><td>OS-00284</td><td>CTO inacessível</td><td><span class="badge bo">3h 05min</span></td><td><span class="badge bo">2x</span></td></tr>
+  <tr><td><div class="tooltip-wrap">OS-00405<div class="tooltip-box">Histórico: OS-00301 (drop danificado) · 2ª tentativa</div></div></td><td>Escritório Centro</td><td>Paulo Santos</td><td>OS-00301</td><td>Drop danificado</td><td><span class="badge bx">2h 20min</span></td><td><span class="badge bo">2x</span></td></tr>
+  </tbody></table>`;
+  if(key==='repeatcall') return `<table class="os-table"><thead><tr><th style="width:20%">Cliente</th><th style="width:16%">OS atual</th><th style="width:14%">Visitas 30d</th><th style="width:14%">Última visita</th><th style="width:18%">Motivo</th><th style="width:18%">Alerta</th></tr></thead><tbody>
+  <tr class="hl"><td>Lúcia Aparecida T.</td><td>OS-00383</td><td>3</td><td>há 8 dias</td><td>Local fechado</td><td><span class="badge br">MAX 3 atingido</span></td></tr>
+  <tr class="hl"><td>Condomínio Parque</td><td>OS-00412</td><td>3</td><td>há 12 dias</td><td>CTO sem fibra</td><td><span class="badge br">MAX 3 atingido</span></td></tr>
+  <tr><td>Padaria Estrela</td><td>OS-00391</td><td>2</td><td>há 5 dias</td><td>CTO inacessível</td><td><span class="badge bo">2º retorno</span></td></tr>
+  <tr><td>Pedro H. N.</td><td>OS-00414</td><td>2</td><td>há 14 dias</td><td>Equipamento</td><td><span class="badge bo">2º retorno</span></td></tr>
+  </tbody></table>`;
+  if(key==='remarc') return `<table class="os-table"><thead><tr><th style="width:14%">OS</th><th style="width:22%">Cliente</th><th style="width:18%">Técnico orig.</th><th style="width:20%">Motivo</th><th style="width:14%">Reagendado p/</th><th style="width:12%">Status</th></tr></thead><tbody>
+  <tr><td>OS-00355</td><td>Farmácia Popular</td><td>Bruno Castro</td><td>Quebra de veículo</td><td>Amanhã 09:00</td><td><span class="badge bo">Reagendado</span></td></tr>
+  <tr><td>OS-00362</td><td>Escola Estadual</td><td>Cesar Melo</td><td>Falta de material</td><td>Amanhã 14:00</td><td><span class="badge bo">Reagendado</span></td></tr>
+  <tr><td>OS-00371</td><td>Ana Beatriz S.</td><td>Igor Nascimento</td><td>Técnico não logado</td><td>Hoje 16:00</td><td><span class="badge by">Pendente</span></td></tr>
+  </tbody></table>`;
+}
+
+function s3drill(key,el){
+  document.querySelectorAll('[id^="s3-kpi-"]').forEach(k=>k.classList.remove('active'));
+  if(el&&el.classList) el.classList.add('active');
+  document.getElementById('s3-drill-title').textContent=s3Titles[key];
+  document.getElementById('s3-drill-content').innerHTML=s3Content(key);
+  if(key==='top5') setTimeout(()=>makeHBar('cv-s3-top5',
+    ['Instalado com sucesso','Sem acesso / local fechado','Pendência técnica','Remarcado pelo técnico','Reagendado pelo cliente'],
+    [14,5,4,4,3],
+    ['#4ade80','#ff6b6b','#ff9f43','#ff9f43','#60a5fa']
+  ),80);
+  if(key==='fvs') setTimeout(()=>makeDonut('cv-s3-fvs',[78,22],['1ª visita sucesso','Retorno'],['#4ade80','#ff6b6b'],'78%'),80);
+}
+
+/* ─── SEÇÃO 4 ─── */
+const s4Titles={
+  aging:'Aging das OS — distribuição por faixa de tempo',
+  sla:'SLA compliance — aderência à janela prometida',
+  prior:'Casos prioritários (8) — 3 sem técnico alocado',
+  ouv:'Ouvidoria e Anatel — casos críticos regulatórios'
+};
+
+function s4Content(key){
+  if(key==='aging') return `
+    <div class="aging-row"><span class="aging-lbl">&lt; 1h</span><div class="aging-track"><div class="aging-fill" style="width:40%;background:#4ade80;"></div></div><span class="aging-n">19</span></div>
+    <div class="aging-row"><span class="aging-lbl">1h – 2h</span><div class="aging-track"><div class="aging-fill" style="width:34%;background:#ccff00;"></div></div><span class="aging-n">16</span></div>
+    <div class="aging-row"><span class="aging-lbl">2h – 4h</span><div class="aging-track"><div class="aging-fill" style="width:17%;background:#ff9f43;"></div></div><span class="aging-n">8</span></div>
+    <div class="aging-row" style="margin-bottom:14px;"><span class="aging-lbl">&gt; 4h</span><div class="aging-track"><div class="aging-fill" style="width:8%;background:#ff6b6b;"></div></div><span class="aging-n">4</span></div>
+    <div class="divlbl" style="color:#ff6b6b;">OS críticas — aging &gt; 4h (abertura original)</div>
+    <table class="os-table"><thead><tr><th style="width:14%">OS</th><th style="width:22%">Cliente</th><th style="width:18%">Técnico</th><th style="width:16%">Abertura orig.</th><th style="width:16%">Aging real</th><th style="width:14%">Status</th></tr></thead><tbody>
+    <tr class="hl"><td>OS-00381</td><td>Maria Fernanda S.</td><td style="color:#ff6b6b;">Sem alocação</td><td>Ontem 07:32</td><td><span class="badge br">29h 12min</span></td><td><span class="badge br">Crítico</span></td></tr>
+    <tr class="hl"><td>OS-00376</td><td>Hospital Central</td><td style="color:#ff6b6b;">Sem alocação</td><td>Ontem 14:15</td><td><span class="badge br">22h 29min</span></td><td><span class="badge br">Crítico</span></td></tr>
+    <tr><td>OS-00394</td><td>Empresa Alfa Ltda</td><td style="color:#ff6b6b;">Sem alocação</td><td>Hoje 08:10</td><td><span class="badge br">4h 34min</span></td><td><span class="badge br">Crítico</span></td></tr>
+    <tr><td>OS-00407</td><td>João Batista M.</td><td>Carlos Mendes</td><td>Hoje 09:00</td><td><span class="badge bo">3h 44min</span></td><td><span class="badge bo">Atenção</span></td></tr>
+    </tbody></table>`;
+  if(key==='sla') return `<div class="donut-wrap">
+    <canvas id="cv-s4-sla" width="160" height="160" role="img" aria-label="Rosca SLA 82%">SLA: 82% dentro, 18% fora.</canvas>
+    <div class="donut-legend">
+      <div class="legend-item"><span class="legend-dot" style="background:#ccff00;"></span>Dentro da janela: 82% (23 OS)</div>
+      <div class="legend-item"><span class="legend-dot" style="background:#ff6b6b;"></span>Fora da janela: 18% (5 OS)</div>
+      <div style="margin-top:8px;font-size:10px;color:#555;">Meta: &gt; 90% · Total: 28 OS</div>
+      <div style="margin-top:10px;">
+      <table class="os-table" style="font-size:11px;"><thead><tr><th>OS</th><th>Cliente</th><th>Janela</th><th>Desvio</th></tr></thead><tbody>
+      <tr><td>OS-00352</td><td>Farmácia Central</td><td>08:00–10:00</td><td><span class="badge br">+42min</span></td></tr>
+      <tr><td>OS-00368</td><td>Salão Beleza</td><td>09:00–11:00</td><td><span class="badge br">+35min</span></td></tr>
+      <tr><td>OS-00374</td><td>Sr. Antônio B.</td><td>10:00–12:00</td><td><span class="badge bo">+28min</span></td></tr>
+      </tbody></table></div>
+    </div></div>`;
+  if(key==='prior') return `<table class="os-table"><thead><tr><th style="width:14%">OS</th><th style="width:22%">Cliente</th><th style="width:18%">Técnico</th><th style="width:16%">Prioridade</th><th style="width:14%">Aging</th><th style="width:16%">Status</th></tr></thead><tbody>
+  <tr class="hl"><td>OS-00376</td><td>Hospital Central</td><td style="color:#ff6b6b;">Sem alocação</td><td><span class="badge br">Empresa crítica</span></td><td><span class="badge br">22h 29min</span></td><td><span class="badge br">Crítico</span></td></tr>
+  <tr class="hl"><td>OS-00382</td><td>UPA Norte</td><td style="color:#ff6b6b;">Sem alocação</td><td><span class="badge br">Saúde pública</span></td><td><span class="badge br">5h 02min</span></td><td><span class="badge br">Crítico</span></td></tr>
+  <tr class="hl"><td>OS-00395</td><td>Farmácia 24h</td><td style="color:#ff6b6b;">Sem alocação</td><td><span class="badge bo">VIP</span></td><td><span class="badge bo">4h 21min</span></td><td><span class="badge bo">Aguardando</span></td></tr>
+  <tr><td>OS-00402</td><td>Escola Municipal</td><td>João Ribeiro</td><td><span class="badge bb">Educação</span></td><td><span class="badge bo">3h 15min</span></td><td><span class="badge bo">Em atend.</span></td></tr>
+  <tr><td>OS-00411</td><td>Delegacia 5ª</td><td>Carlos Mendes</td><td><span class="badge bb">Seg. pública</span></td><td><span class="badge bo">2h 50min</span></td><td><span class="badge bo">Em atend.</span></td></tr>
+  </tbody></table>`;
+  if(key==='ouv') return `<div class="tab-bar">
+    <div class="tab active" id="ouv-tab-a" onclick="ouvTab('anatel',this)">Anatel (2)</div>
+    <div class="tab" id="ouv-tab-o" onclick="ouvTab('ouv2',this)">Ouvidoria (3)</div>
+  </div>
+  <div id="ouv-anatel"><table class="os-table"><thead><tr><th style="width:14%">OS</th><th style="width:22%">Cliente</th><th style="width:16%">Técnico</th><th style="width:20%">Protocolo Anatel</th><th style="width:14%">Prazo legal</th><th style="width:14%">Status</th></tr></thead><tbody>
+  <tr class="hl"><td>OS-00381</td><td>Maria Fernanda S.</td><td style="color:#ff6b6b;">Sem alocação</td><td>ANA-2026-04412</td><td><span class="badge br">Vence hoje</span></td><td><span class="badge br">Crítico</span></td></tr>
+  <tr><td>OS-00394</td><td>Empresa Alfa Ltda</td><td style="color:#ff6b6b;">Sem alocação</td><td>ANA-2026-04388</td><td><span class="badge bo">Vence amanhã</span></td><td><span class="badge bo">Urgente</span></td></tr>
+  </tbody></table></div>
+  <div id="ouv-ouv2" style="display:none;"><table class="os-table"><thead><tr><th style="width:14%">OS</th><th style="width:22%">Cliente</th><th style="width:16%">Técnico</th><th style="width:20%">Protocolo</th><th style="width:14%">Abertura</th><th style="width:14%">Status</th></tr></thead><tbody>
+  <tr><td>OS-00407</td><td>João Batista M.</td><td>Carlos Mendes</td><td>OUV-2026-0862</td><td>09:00</td><td><span class="badge bo">Em atend.</span></td></tr>
+  <tr><td>OS-00418</td><td>Condomínio Verde</td><td>Paulo Santos</td><td>OUV-2026-0878</td><td>10:05</td><td><span class="badge bo">Em atend.</span></td></tr>
+  <tr><td>OS-00431</td><td>Ana Clara P.</td><td>Ricardo F.</td><td>OUV-2026-0891</td><td>11:20</td><td><span class="badge bg">Normal</span></td></tr>
+  </tbody></table></div>`;
+}
+
+function s4drill(key,el){
+  document.querySelectorAll('[id^="s4-kpi-"]').forEach(k=>k.classList.remove('active'));
+  if(el&&el.classList) el.classList.add('active');
+  document.getElementById('s4-drill-title').textContent=s4Titles[key];
+  document.getElementById('s4-drill-content').innerHTML=s4Content(key);
+  if(key==='sla') setTimeout(()=>makeDonut('cv-s4-sla',[82,18],['Dentro da janela','Fora da janela'],['#ccff00','#ff6b6b'],'82%'),80);
+}
+
+function ouvTab(id,el){
+  document.getElementById('ouv-anatel').style.display=id==='anatel'?'':'none';
+  document.getElementById('ouv-ouv2').style.display=id==='ouv2'?'':'none';
+  document.querySelectorAll('#ouv-tab-a,#ouv-tab-o').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+}
+
+/* ─── INIT ─── */
+window.addEventListener('load',function(){
+  s1drill('logados',document.getElementById('s1-kpi-logados'));
+  s3drill('top5',null);
+  s4drill('aging',document.getElementById('s4-kpi-aging'));
+});
+</script>
